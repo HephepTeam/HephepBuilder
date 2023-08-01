@@ -23,8 +23,15 @@ var empty_cmd_line = {
 @onready var macCheckbox = $PlatformsSettings/MarginContainer/PlatformSettingsHbox/MacExportCfg/MacPlatformSettings/MacCheckbox
 @onready var linuxCheckbox = $PlatformsSettings/MarginContainer/PlatformSettingsHbox/LinuxExportCfg/LinuxPlatformSettings/LinuxCheckbox
 
+@onready var ProjectPathLine = $ProjectSettings/ProjectPathLineEdit
+@onready var GodotPathLine = $GodotSettings/GododtPathLineEdit
+
 signal project_path_loaded
-signal process_finished(pid)
+signal preset_saved
+
+const PRESET_FOLDER_PATH = "user://presets/"
+var game_preset_list = []
+
 
 var building = false
 var pid_list = []
@@ -36,17 +43,20 @@ var job_list = []
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	pass # Replace with function body.
+	var dir = DirAccess.open("user://")
+	if !dir.dir_exists(PRESET_FOLDER_PATH):
+		dir.make_dir_absolute(PRESET_FOLDER_PATH)
+	get_game_preset_list()
 
 # todo:
 # when opening a godot project, I should store the path, and open the export_preset.cfg
 # to check if any of the windows, linux and/or mac preset have been defined, to enable or 
-# disable the corresponding checkbox 
+# disable the corresponding checkbox OK
 
-# show file explorer to get the project and the godot executable folder
+# show file explorer to get the project and the godot executable folder OK
 
 # manage each export as an array of "job", probably I'll need to wait for one export to finish before
-# starting another
+# starting another -> USE THREAD TO GET THE OUTPUT AND WRITE A LOG FILE THAT YOU OPEN AT THE END
 
 # the tool should allow to save preset as Resource for each project and keep a list available to quick load
 
@@ -211,22 +221,16 @@ func parse_project_dot_godot(path : String):
 		var line = file.get_line()
 		#create an entry every [preset.X] in a dictionnary (use a class?)
 		if line.contains("config/name="):
-			project_name = line.split("=")[1]
+			var temp = line.split("=")[1]
+			var temp2 = temp.rstrip('"')
+			project_name = temp2.lstrip('"')
 			break
 			
 	print(project_name)
 	return project_name
-	
-func save_cfg_as_resource():
-	pass
-	#fill a custom ressource with data, project name, path selected for godot and project, 
-	#checkboxes checked, stuff like that (to be updated)
-	#save as file somewhere
 
 
 func _on_project_path_loaded():
-
-	
 	# update checkboxes and lists
 	windowslist.get_popup().clear()
 	maclist.get_popup().clear()
@@ -247,6 +251,7 @@ func _on_project_path_loaded():
 	windowslist.text = windowslist.get_popup().get_item_text(0)
 	maclist.text = maclist.get_popup().get_item_text(0)
 	linuxlist.text = linuxlist.get_popup().get_item_text(0)
+	$GamePresetSaveButton.disabled = false
 			
 
 
@@ -283,4 +288,71 @@ func disable_all(val : bool):
 	$PlatformsSettings/MarginContainer/PlatformSettingsHbox/MacExportCfg/MacPlatformSettings/MacCheckbox.disabled = val
 	$PlatformsSettings/MarginContainer/PlatformSettingsHbox/MacExportCfg/MacPresetList.disabled = val
 	$BuildButton.disabled = val
+	$GamePresetSaveButton.disabled = val
 
+
+func save_game_preset():
+	var preset = GamePreset.new()
+	
+	var project_name = temp_project_name
+	var godot_path = $GodotSettings/GododtPathLineEdit.text
+	var project_path = $ProjectSettings/ProjectPathLineEdit.text
+	var platform_checkboxes = [windowsCheckbox.button_pressed,macCheckbox.button_pressed, linuxCheckbox.button_pressed ]
+	var platform_presets = [windowslist.text,maclist.text, linuxlist.text ]
+	
+	preset.create(project_name,project_path,godot_path,platform_checkboxes,platform_presets  )
+	
+	var filename = project_name.replace(":","-")
+	
+	var ret = ResourceSaver.save(preset, PRESET_FOLDER_PATH+filename+".res")
+	emit_signal("preset_saved")
+	
+func load_game_preset(project_name : String):
+	var path = PRESET_FOLDER_PATH+project_name+".res"
+	var preset = ResourceLoader.load(path) as GamePreset
+	
+	#update fields
+	ProjectPathLine.text = preset["project_path"]
+	temp_export_presets_list = parse_export_presets_cfg(preset["project_path"])
+	temp_project_name = parse_project_dot_godot(preset["project_path"])
+	emit_signal("project_path_loaded")
+	GodotPathLine.text = preset["godot_version_path"]
+	windowsCheckbox.button_pressed = preset["platforms_checked"][0]
+	macCheckbox.button_pressed = preset["platforms_checked"][1]
+	linuxCheckbox.button_pressed = preset["platforms_checked"][2]
+	windowslist.text = preset["export_presets"][0]
+	maclist.text = preset["export_presets"][1]
+	linuxlist.text = preset["export_presets"][2]
+	
+
+
+func _on_game_preset_save_button_pressed():
+	$GamePreset.text = temp_project_name
+	save_game_preset()
+	get_game_preset_list()
+	
+	#update game preset list
+
+func get_game_preset_list():
+	var dir = DirAccess.open(PRESET_FOLDER_PATH)
+	var presets_path = dir.get_files()
+	print(presets_path)
+	$GamePreset.get_popup().clear()
+	
+	
+	if !presets_path.is_empty():
+		$GamePresetSaveButton.disabled = false
+		for path in presets_path:		
+			$GamePreset.get_popup().add_item(path.trim_suffix(".res"))
+		$GamePreset.text = $GamePreset.get_popup().get_item_text(0)
+		
+		$GamePreset.get_popup().connect("id_pressed", _on_GamePreset_item_pressed)
+	
+func _on_GamePreset_item_pressed(id):
+	print($GamePreset.get_popup().get_item_text(id))
+	load_game_preset($GamePreset.get_popup().get_item_text(id))
+	$GamePreset.text = $GamePreset.get_popup().get_item_text(id)
+
+
+func _on_button_pressed():
+	get_tree().quit()

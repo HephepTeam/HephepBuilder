@@ -1,6 +1,5 @@
-[gd_scene load_steps=4 format=3 uid="uid://cx4b2wgyswuds"]
+[gd_scene load_steps=3 format=3 uid="uid://cx4b2wgyswuds"]
 
-[ext_resource type="Theme" uid="uid://bsvt3gdf66p1l" path="res://Assets/Themes/kenneyUI-blue.tres" id="1_ky0oo"]
 [ext_resource type="Script" path="res://scenes/hephep_builder.gd" id="2_qggxj"]
 [ext_resource type="Texture2D" uid="uid://bg84gbjijqbs6" path="res://Assets/Themes/UIpack_vector.svg" id="3_0h5mw"]
 
@@ -11,16 +10,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme = ExtResource("1_ky0oo")
 script = ExtResource("2_qggxj")
-
-[node name="Panel" type="Panel" parent="."]
-visible = false
-layout_mode = 2
-offset_right = 800.0
-offset_bottom = 600.0
-grow_horizontal = 2
-grow_vertical = 2
 
 [node name="NinePatchRect" type="NinePatchRect" parent="."]
 layout_mode = 0
@@ -33,16 +23,6 @@ patch_margin_top = 7
 patch_margin_right = 7
 patch_margin_bottom = 7
 
-[node name="CenterContainer" type="CenterContainer" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_right = -352.0
-offset_bottom = -48.0
-grow_horizontal = 2
-grow_vertical = 2
-
 [node name="Title" type="Label" parent="."]
 layout_mode = 0
 offset_right = 800.0
@@ -53,9 +33,9 @@ horizontal_alignment = 1
 
 [node name="ProjectSettings" type="Control" parent="."]
 anchors_preset = 0
-offset_top = 24.0
+offset_top = 82.0
 offset_right = 800.0
-offset_bottom = 112.0
+offset_bottom = 170.0
 
 [node name="ProjectPathLabel" type="Label" parent="ProjectSettings"]
 layout_mode = 0
@@ -83,9 +63,9 @@ text = "BROWSE"
 
 [node name="GodotSettings" type="Control" parent="."]
 anchors_preset = 0
-offset_top = 96.0
+offset_top = 154.0
 offset_right = 800.0
-offset_bottom = 176.0
+offset_bottom = 234.0
 
 [node name="GodotPathLabel" type="Label" parent="GodotSettings"]
 layout_mode = 0
@@ -114,9 +94,9 @@ text = "BROWSE"
 [node name="PlatformsSettings" type="Control" parent="."]
 anchors_preset = 0
 offset_left = 32.0
-offset_top = 192.0
+offset_top = 250.0
 offset_right = 768.0
-offset_bottom = 272.0
+offset_bottom = 330.0
 
 [node name="MarginContainer" type="MarginContainer" parent="PlatformsSettings"]
 layout_mode = 0
@@ -226,6 +206,40 @@ dialog_hide_on_ok = true
 file_mode = 0
 access = 2
 
+[node name="GamePreset" type="MenuButton" parent="."]
+custom_minimum_size = Vector2(226, 0)
+layout_mode = 0
+offset_left = 448.0
+offset_top = 50.0
+offset_right = 674.0
+offset_bottom = 90.0
+flat = false
+
+[node name="GamePresetSaveButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 688.0
+offset_top = 50.0
+offset_right = 772.0
+offset_bottom = 90.0
+disabled = true
+text = "SAVE"
+
+[node name="ltd" type="Label" parent="."]
+layout_mode = 0
+offset_left = 27.0
+offset_top = 560.0
+offset_right = 465.0
+offset_bottom = 581.0
+text = "HEPEP TEAM ALL RIGHTS RESERVED LTD INC"
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 0
+offset_left = 736.0
+offset_top = 9.0
+offset_right = 768.0
+offset_bottom = 40.0
+text = "X"
+
 [connection signal="project_path_loaded" from="." to="." method="_on_project_path_loaded"]
 [connection signal="pressed" from="ProjectSettings/ProjectBrowseButton" to="." method="_on_project_browse_button_pressed"]
 [connection signal="pressed" from="GodotSettings/GodotBrowseButton" to="." method="_on_godot_browse_button_pressed"]
@@ -235,3 +249,5 @@ access = 2
 [connection signal="pressed" from="BuildButton" to="." method="_on_build_button_pressed"]
 [connection signal="dir_selected" from="ProjectDialog" to="." method="_on_project_dialog_dir_selected"]
 [connection signal="file_selected" from="GodotDialog" to="." method="_on_godot_dialog_file_selected"]
+[connection signal="pressed" from="GamePresetSaveButton" to="." method="_on_game_preset_save_button_pressed"]
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
