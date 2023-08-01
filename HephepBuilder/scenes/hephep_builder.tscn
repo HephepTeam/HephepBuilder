@@ -1,0 +1,237 @@
+[gd_scene load_steps=4 format=3 uid="uid://cx4b2wgyswuds"]
+
+[ext_resource type="Theme" uid="uid://bsvt3gdf66p1l" path="res://Assets/Themes/kenneyUI-blue.tres" id="1_ky0oo"]
+[ext_resource type="Script" path="res://scenes/hephep_builder.gd" id="2_qggxj"]
+[ext_resource type="Texture2D" uid="uid://bg84gbjijqbs6" path="res://Assets/Themes/UIpack_vector.svg" id="3_0h5mw"]
+
+[node name="HephepBuilder" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_ky0oo")
+script = ExtResource("2_qggxj")
+
+[node name="Panel" type="Panel" parent="."]
+visible = false
+layout_mode = 2
+offset_right = 800.0
+offset_bottom = 600.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="NinePatchRect" type="NinePatchRect" parent="."]
+layout_mode = 0
+offset_right = 800.0
+offset_bottom = 600.0
+texture = ExtResource("3_0h5mw")
+region_rect = Rect2(485, 310, 99.7893, 100)
+patch_margin_left = 7
+patch_margin_top = 7
+patch_margin_right = 7
+patch_margin_bottom = 7
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -352.0
+offset_bottom = -48.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Title" type="Label" parent="."]
+layout_mode = 0
+offset_right = 800.0
+offset_bottom = 40.0
+theme_type_variation = &"HeaderMedium"
+text = "Hephep Builder"
+horizontal_alignment = 1
+
+[node name="ProjectSettings" type="Control" parent="."]
+anchors_preset = 0
+offset_top = 24.0
+offset_right = 800.0
+offset_bottom = 112.0
+
+[node name="ProjectPathLabel" type="Label" parent="ProjectSettings"]
+layout_mode = 0
+offset_left = 40.0
+offset_top = 16.0
+offset_right = 194.0
+offset_bottom = 37.0
+text = "Project path:"
+
+[node name="ProjectPathLineEdit" type="LineEdit" parent="ProjectSettings"]
+layout_mode = 0
+offset_left = 40.0
+offset_top = 40.0
+offset_right = 672.0
+offset_bottom = 66.0
+placeholder_text = "the path for the project you want to build"
+
+[node name="ProjectBrowseButton" type="Button" parent="ProjectSettings"]
+layout_mode = 0
+offset_left = 688.0
+offset_top = 32.0
+offset_right = 772.0
+offset_bottom = 72.0
+text = "BROWSE"
+
+[node name="GodotSettings" type="Control" parent="."]
+anchors_preset = 0
+offset_top = 96.0
+offset_right = 800.0
+offset_bottom = 176.0
+
+[node name="GodotPathLabel" type="Label" parent="GodotSettings"]
+layout_mode = 0
+offset_left = 40.0
+offset_top = 16.0
+offset_right = 194.0
+offset_bottom = 37.0
+text = "Godot path:"
+
+[node name="GododtPathLineEdit" type="LineEdit" parent="GodotSettings"]
+layout_mode = 0
+offset_left = 40.0
+offset_top = 40.0
+offset_right = 672.0
+offset_bottom = 66.0
+placeholder_text = "the path for the Godot version you want to build with"
+
+[node name="GodotBrowseButton" type="Button" parent="GodotSettings"]
+layout_mode = 0
+offset_left = 688.0
+offset_top = 32.0
+offset_right = 772.0
+offset_bottom = 72.0
+text = "BROWSE"
+
+[node name="PlatformsSettings" type="Control" parent="."]
+anchors_preset = 0
+offset_left = 32.0
+offset_top = 192.0
+offset_right = 768.0
+offset_bottom = 272.0
+
+[node name="MarginContainer" type="MarginContainer" parent="PlatformsSettings"]
+layout_mode = 0
+offset_right = 736.0
+offset_bottom = 40.0
+theme_override_constants/margin_left = 16
+
+[node name="PlatformSettingsHbox" type="HBoxContainer" parent="PlatformsSettings/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 30
+alignment = 1
+
+[node name="WindowsExportCfg" type="VBoxContainer" parent="PlatformsSettings/MarginContainer/PlatformSettingsHbox"]
+layout_mode = 2
+
+[node name="WindowsPlatformSettings" type="HBoxContainer" parent="PlatformsSettings/MarginContainer/PlatformSettingsHbox/WindowsExportCfg"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="WindowsCheckbox" type="CheckBox" parent="PlatformsSettings/MarginContainer/PlatformSettingsHbox/WindowsExportCfg/WindowsPlatformSettings"]
+layout_mode = 2
+disabled = true
+
+[node name="Label" type="Label" parent="PlatformsSettings/MarginContainer/PlatformSettingsHbox/WindowsExportCfg/WindowsPlatformSettings"]
+layout_mode = 2
+text = "Windows"
+horizontal_alignment = 1
+
+[node name="WindowsPresetList" type="MenuButton" parent="PlatformsSettings/MarginContainer/PlatformSettingsHbox/WindowsExportCfg"]
+layout_mode = 2
+text = "preset"
+flat = false
+switch_on_hover = true
+
+[node name="LinuxExportCfg" type="VBoxContainer" parent="PlatformsSettings/MarginContainer/PlatformSettingsHbox"]
+layout_mode = 2
+
+[node name="LinuxPlatformSettings" type="HBoxContainer" parent="PlatformsSettings/MarginContainer/PlatformSettingsHbox/LinuxExportCfg"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="LinuxCheckbox" type="CheckBox" parent="PlatformsSettings/MarginContainer/PlatformSettingsHbox/LinuxExportCfg/LinuxPlatformSettings"]
+layout_mode = 2
+disabled = true
+
+[node name="Label" type="Label" parent="PlatformsSettings/MarginContainer/PlatformSettingsHbox/LinuxExportCfg/LinuxPlatformSettings"]
+layout_mode = 2
+text = "Linux"
+horizontal_alignment = 1
+
+[node name="LinuxPresetList" type="MenuButton" parent="PlatformsSettings/MarginContainer/PlatformSettingsHbox/LinuxExportCfg"]
+layout_mode = 2
+text = "preset"
+flat = false
+switch_on_hover = true
+
+[node name="MacExportCfg" type="VBoxContainer" parent="PlatformsSettings/MarginContainer/PlatformSettingsHbox"]
+layout_mode = 2
+
+[node name="MacPlatformSettings" type="HBoxContainer" parent="PlatformsSettings/MarginContainer/PlatformSettingsHbox/MacExportCfg"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="MacCheckbox" type="CheckBox" parent="PlatformsSettings/MarginContainer/PlatformSettingsHbox/MacExportCfg/MacPlatformSettings"]
+layout_mode = 2
+disabled = true
+
+[node name="Label" type="Label" parent="PlatformsSettings/MarginContainer/PlatformSettingsHbox/MacExportCfg/MacPlatformSettings"]
+layout_mode = 2
+text = "MacOS"
+horizontal_alignment = 1
+
+[node name="MacPresetList" type="MenuButton" parent="PlatformsSettings/MarginContainer/PlatformSettingsHbox/MacExportCfg"]
+layout_mode = 2
+text = "preset"
+flat = false
+switch_on_hover = true
+
+[node name="BuildButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 656.0
+offset_top = 536.0
+offset_right = 766.0
+offset_bottom = 576.0
+theme_override_font_sizes/font_size = 30
+disabled = true
+text = "BUILD"
+
+[node name="ProjectDialog" type="FileDialog" parent="."]
+title = "Open a Directory"
+initial_position = 1
+size = Vector2i(523, 300)
+min_size = Vector2i(300, 300)
+ok_button_text = "Sélectionner le dossier courant"
+dialog_hide_on_ok = true
+file_mode = 2
+access = 2
+
+[node name="GodotDialog" type="FileDialog" parent="."]
+title = "Open a File"
+initial_position = 1
+size = Vector2i(523, 300)
+min_size = Vector2i(300, 300)
+ok_button_text = "Ouvrir"
+dialog_hide_on_ok = true
+file_mode = 0
+access = 2
+
+[connection signal="project_path_loaded" from="." to="." method="_on_project_path_loaded"]
+[connection signal="pressed" from="ProjectSettings/ProjectBrowseButton" to="." method="_on_project_browse_button_pressed"]
+[connection signal="pressed" from="GodotSettings/GodotBrowseButton" to="." method="_on_godot_browse_button_pressed"]
+[connection signal="pressed" from="PlatformsSettings/MarginContainer/PlatformSettingsHbox/WindowsExportCfg/WindowsPlatformSettings/WindowsCheckbox" to="." method="_on_windows_checkbox_pressed"]
+[connection signal="pressed" from="PlatformsSettings/MarginContainer/PlatformSettingsHbox/LinuxExportCfg/LinuxPlatformSettings/LinuxCheckbox" to="." method="_on_linux_checkbox_pressed"]
+[connection signal="pressed" from="PlatformsSettings/MarginContainer/PlatformSettingsHbox/MacExportCfg/MacPlatformSettings/MacCheckbox" to="." method="_on_mac_checkbox_pressed"]
+[connection signal="pressed" from="BuildButton" to="." method="_on_build_button_pressed"]
+[connection signal="dir_selected" from="ProjectDialog" to="." method="_on_project_dialog_dir_selected"]
+[connection signal="file_selected" from="GodotDialog" to="." method="_on_godot_dialog_file_selected"]
