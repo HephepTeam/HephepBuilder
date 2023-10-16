@@ -72,7 +72,7 @@ func _process(delta):
 	if building:
 		if thread != null:
 			if !thread.is_alive():
-				$console.text =thread.wait_to_finish()
+				$console.text += thread.wait_to_finish()
 				$console.scroll_vertical = INF
 				thread = null
 		
@@ -80,6 +80,9 @@ func _process(delta):
 			if !job_list.is_empty():
 				start_job()
 			else:
+				$console.text += "All jobs done"
+				$console.text += "\n"
+				$console.scroll_vertical = INF
 				building = false
 				disable_all(false)
 
@@ -153,7 +156,10 @@ func start_job():
 			var export_folder = job["export_path"].get_base_dir() 
 			if !dir.dir_exists(export_folder):
 				DirAccess.make_dir_recursive_absolute(job["project_path"]+"/"+export_folder)
-			print(job)
+			$console.text += "Current job parameters: \n"
+			$console.text += str(job)
+			$console.text += "\n"
+			$console.scroll_vertical = INF
 			thread = Thread.new()
 			thread.start(execute_job.bind(job),Thread.PRIORITY_NORMAL)
 #			pid = OS.create_process(job["executable_path"],["--no-window", "--path", job["project_path"], "--export",job["preset_name"], job["export_path"]], true)
@@ -165,6 +171,7 @@ func execute_job(job) -> String:
 	var err: int = OS.execute(job["executable_path"],["--no-window", "--path", job["project_path"], "--export",job["preset_name"], job["export_path"]], output,true)
 	if err != 0:
 		printerr("Error occurred: %d" % err)
+		return "Error occurred: %d" % err
 
 	return "\n".join(PackedStringArray(output))
 
