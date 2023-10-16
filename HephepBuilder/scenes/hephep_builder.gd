@@ -43,6 +43,7 @@ var job_list = []
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	windowslist.get_popup().connect("id_pressed", _on_windowsPresetList_pressed)
 	var dir = DirAccess.open("user://")
 	if !dir.dir_exists(PRESET_FOLDER_PATH):
 		dir.make_dir_absolute(PRESET_FOLDER_PATH)
@@ -64,15 +65,16 @@ func _ready():
 
 
 var pid = null
+var thread : Thread
 
 func _process(delta):
 	
 	if building:
-		if pid != null:
-			if OS.is_process_running(pid) == false:
-				OS.kill(pid)
-				pid = null
-				print("job fini")
+		if thread != null:
+			if !thread.is_alive():
+				$console.text =thread.wait_to_finish()
+				$console.scroll_vertical = INF
+				thread = null
 		
 		else:
 			if !job_list.is_empty():
@@ -80,7 +82,6 @@ func _process(delta):
 			else:
 				building = false
 				disable_all(false)
-				print("all job finished")
 
 func _on_build_button_pressed():
 	disable_all(true)
@@ -137,16 +138,35 @@ func _on_build_button_pressed():
 		cmd_line["export_path"] = export_path
 		job_list.append(cmd_line)
 		
+		
 	# launch first job
 	start_job()
 #	var err = OS.excute("C:/gamedev/tools/Godot/win64-godotSteam352-s156-gs3192/windows-352-editor-64bit.exe",["--no-window", "--path", "C:/gamedev/repo/7dif", "--export", "Windows", "C:/gamedev/repo/7dif/Test.exe"],false,output,  false, false)
 	
 	
 func start_job():
-		if pid == null:
+		if thread == null:
+#		if pid == null:
 			var job = job_list.pop_front()
-			pid = OS.create_process(job["executable_path"],["--no-window", "--path", job["project_path"], "--export",job["preset_name"], job["export_path"]], true)
+			# todo: create export path folders
+			var dir = DirAccess.open(job["project_path"])
+			var export_folder = job["export_path"].get_base_dir() 
+			if !dir.dir_exists(export_folder):
+				DirAccess.make_dir_recursive_absolute(job["project_path"]+"/"+export_folder)
+			print(job)
+			thread = Thread.new()
+			thread.start(execute_job.bind(job),Thread.PRIORITY_NORMAL)
+#			pid = OS.create_process(job["executable_path"],["--no-window", "--path", job["project_path"], "--export",job["preset_name"], job["export_path"]], true)
 			building = true
+
+
+func execute_job(job) -> String:
+	var output:= []
+	var err: int = OS.execute(job["executable_path"],["--no-window", "--path", job["project_path"], "--export",job["preset_name"], job["export_path"]], output,true)
+	if err != 0:
+		printerr("Error occurred: %d" % err)
+
+	return "\n".join(PackedStringArray(output))
 
 
 func _on_project_browse_button_pressed():
@@ -154,9 +174,10 @@ func _on_project_browse_button_pressed():
 
 
 func _on_project_dialog_dir_selected(dir):
-	$ProjectSettings/ProjectPathLineEdit.text = dir
-	temp_export_presets_list = parse_export_presets_cfg(dir)
-	temp_project_name = parse_project_dot_godot(dir)
+	var dirtemp = dir.get_base_dir()
+	$ProjectSettings/ProjectPathLineEdit.text = dirtemp+"/"
+	temp_export_presets_list = parse_export_presets_cfg(dirtemp)
+	temp_project_name = parse_project_dot_godot(dirtemp)
 	
 	emit_signal("project_path_loaded")
 	
@@ -205,7 +226,6 @@ func parse_export_presets_cfg(project_path : String):
 			available_export_presets[current_export_preset["name"]]=current_export_preset
 			
 		
-	print(available_export_presets)
 	return available_export_presets
 	
 	
@@ -226,7 +246,6 @@ func parse_project_dot_godot(path : String):
 			project_name = temp2.lstrip('"')
 			break
 			
-	print(project_name)
 	return project_name
 
 
@@ -252,8 +271,12 @@ func _on_project_path_loaded():
 	maclist.text = maclist.get_popup().get_item_text(0)
 	linuxlist.text = linuxlist.get_popup().get_item_text(0)
 	$GamePresetSaveButton.disabled = false
+	$GamePresetDeleteButton.disabled = false
 			
 
+func _on_windowsPresetList_pressed(id):
+	windowslist.text = windowslist.get_popup().get_item_text(id)
+	
 
 func _on_windows_checkbox_pressed():
 	check_checkboxes()
@@ -290,6 +313,9 @@ func disable_all(val : bool):
 	$BuildButton.disabled = val
 	$GamePresetSaveButton.disabled = val
 
+func delete_game_preset(path):
+	var dir = DirAccess.open("user://presets")
+	dir.remove(path)
 
 func save_game_preset():
 	var preset = GamePreset.new()
@@ -311,19 +337,22 @@ func load_game_preset(project_name : String):
 	var path = PRESET_FOLDER_PATH+project_name+".res"
 	var preset = ResourceLoader.load(path) as GamePreset
 	
-	#update fields
-	ProjectPathLine.text = preset["project_path"]
-	temp_export_presets_list = parse_export_presets_cfg(preset["project_path"])
-	temp_project_name = parse_project_dot_godot(preset["project_path"])
-	emit_signal("project_path_loaded")
-	GodotPathLine.text = preset["godot_version_path"]
-	windowsCheckbox.button_pressed = preset["platforms_checked"][0]
-	macCheckbox.button_pressed = preset["platforms_checked"][1]
-	linuxCheckbox.button_pressed = preset["platforms_checked"][2]
-	windowslist.text = preset["export_presets"][0]
-	maclist.text = preset["export_presets"][1]
-	linuxlist.text = preset["export_presets"][2]
-	
+	if preset == null:
+		delete_game_preset(path)
+	else:
+		#update fields
+		ProjectPathLine.text = preset["project_path"]
+		temp_export_presets_list = parse_export_presets_cfg(preset["project_path"])
+		temp_project_name = parse_project_dot_godot(preset["project_path"])
+		emit_signal("project_path_loaded")
+		GodotPathLine.text = preset["godot_version_path"]
+		windowsCheckbox.button_pressed = preset["platforms_checked"][0]
+		macCheckbox.button_pressed = preset["platforms_checked"][1]
+		linuxCheckbox.button_pressed = preset["platforms_checked"][2]
+		windowslist.text = preset["export_presets"][0]
+		maclist.text = preset["export_presets"][1]
+		linuxlist.text = preset["export_presets"][2]
+		
 
 
 func _on_game_preset_save_button_pressed():
@@ -336,23 +365,29 @@ func _on_game_preset_save_button_pressed():
 func get_game_preset_list():
 	var dir = DirAccess.open(PRESET_FOLDER_PATH)
 	var presets_path = dir.get_files()
-	print(presets_path)
 	$GamePreset.get_popup().clear()
 	
 	
 	if !presets_path.is_empty():
 		$GamePresetSaveButton.disabled = false
-		for path in presets_path:		
-			$GamePreset.get_popup().add_item(path.trim_suffix(".res"))
+		for path in presets_path:
+			if path.contains(".res"):
+				$GamePreset.get_popup().add_item(path.trim_suffix(".res"))
 		$GamePreset.text = $GamePreset.get_popup().get_item_text(0)
 		
 		$GamePreset.get_popup().connect("id_pressed", _on_GamePreset_item_pressed)
 	
 func _on_GamePreset_item_pressed(id):
-	print($GamePreset.get_popup().get_item_text(id))
+	$GamePreset.get_popup().get_item_text(id)
 	load_game_preset($GamePreset.get_popup().get_item_text(id))
 	$GamePreset.text = $GamePreset.get_popup().get_item_text(id)
 
 
 func _on_button_pressed():
 	get_tree().quit()
+
+
+func _on_game_preset_delete_button_pressed():
+	var path = PRESET_FOLDER_PATH+ $GamePreset.text+".res"
+	delete_game_preset(path)
+	get_game_preset_list()

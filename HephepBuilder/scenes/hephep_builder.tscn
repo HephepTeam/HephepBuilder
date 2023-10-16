@@ -13,6 +13,7 @@ grow_vertical = 2
 script = ExtResource("2_qggxj")
 
 [node name="NinePatchRect" type="NinePatchRect" parent="."]
+visible = false
 layout_mode = 0
 offset_right = 800.0
 offset_bottom = 600.0
@@ -219,12 +220,22 @@ flat = false
 layout_mode = 0
 offset_left = 688.0
 offset_top = 50.0
-offset_right = 772.0
+offset_right = 735.0
 offset_bottom = 90.0
 disabled = true
 text = "SAVE"
 
+[node name="GamePresetDeleteButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 735.0
+offset_top = 50.0
+offset_right = 782.0
+offset_bottom = 90.0
+disabled = true
+text = "DEL"
+
 [node name="ltd" type="Label" parent="."]
+visible = false
 layout_mode = 0
 offset_left = 27.0
 offset_top = 560.0
@@ -240,6 +251,18 @@ offset_right = 768.0
 offset_bottom = 40.0
 text = "X"
 
+[node name="console" type="TextEdit" parent="."]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 368.0
+offset_right = 640.0
+offset_bottom = 576.0
+editable = false
+deselect_on_focus_loss_enabled = false
+drag_and_drop_selection_enabled = false
+virtual_keyboard_enabled = false
+middle_mouse_paste_enabled = false
+
 [connection signal="project_path_loaded" from="." to="." method="_on_project_path_loaded"]
 [connection signal="pressed" from="ProjectSettings/ProjectBrowseButton" to="." method="_on_project_browse_button_pressed"]
 [connection signal="pressed" from="GodotSettings/GodotBrowseButton" to="." method="_on_godot_browse_button_pressed"]
@@ -250,4 +273,5 @@ text = "X"
 [connection signal="dir_selected" from="ProjectDialog" to="." method="_on_project_dialog_dir_selected"]
 [connection signal="file_selected" from="GodotDialog" to="." method="_on_godot_dialog_file_selected"]
 [connection signal="pressed" from="GamePresetSaveButton" to="." method="_on_game_preset_save_button_pressed"]
+[connection signal="pressed" from="GamePresetDeleteButton" to="." method="_on_game_preset_delete_button_pressed"]
 [connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
