@@ -171,7 +171,7 @@ func execute_job(job) -> String:
 	var err: int = OS.execute(job["executable_path"],["--no-window", "--path", job["project_path"], "--export",job["preset_name"], job["export_path"]], output,true)
 	if err != 0:
 		printerr("Error occurred: %d" % err)
-		return "Error occurred: %d" % err
+		return ("Error occurred: %d\n" % err) + "\n".join(PackedStringArray(output))
 
 	return "\n".join(PackedStringArray(output))
 
@@ -376,11 +376,10 @@ func get_game_preset_list():
 	
 	
 	if !presets_path.is_empty():
-		$GamePresetSaveButton.disabled = false
 		for path in presets_path:
 			if path.contains(".res"):
 				$GamePreset.get_popup().add_item(path.trim_suffix(".res"))
-		$GamePreset.text = $GamePreset.get_popup().get_item_text(0)
+#		$GamePreset.text = $GamePreset.get_popup().get_item_text(0)
 		
 		$GamePreset.get_popup().connect("id_pressed", _on_GamePreset_item_pressed)
 	
@@ -388,6 +387,7 @@ func _on_GamePreset_item_pressed(id):
 	$GamePreset.get_popup().get_item_text(id)
 	load_game_preset($GamePreset.get_popup().get_item_text(id))
 	$GamePreset.text = $GamePreset.get_popup().get_item_text(id)
+	$GamePresetSaveButton.disabled = false
 
 
 func _on_button_pressed():
@@ -398,3 +398,15 @@ func _on_game_preset_delete_button_pressed():
 	var path = PRESET_FOLDER_PATH+ $GamePreset.text+".res"
 	delete_game_preset(path)
 	get_game_preset_list()
+	$GamePreset.text = ""
+	$ProjectSettings/ProjectPathLineEdit.text = ""
+	$GodotSettings/GododtPathLineEdit.text = ""
+	# update checkboxes and lists
+	windowslist.get_popup().clear()
+	windowslist.text = ""
+	maclist.get_popup().clear()
+	maclist.text = ""
+	linuxlist.get_popup().clear()
+	linuxlist.text = ""
+	$GamePresetSaveButton.disabled = false
+	$GamePresetDeleteButton.disabled = false
