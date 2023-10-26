@@ -11,26 +11,34 @@ var empty_cmd_line = {
 	"project_path" = "",
 	"preset_name" = "",
 	"export_path" = ""
-	
-	
 }
+
+var job_template = {
+	"job_type"= "",
+	"executable"="",
+	"arguments"=["--no-window", "--path"],
+	"project_path" = "",
+	"preset_name" = "",
+	"export_path" = ""
+}
+
+@onready var export_preset_item = preload("res://scenes/export_preset_item.tscn")
 
 @onready var windowslist = $PlatformsSettings/MarginContainer/PlatformSettingsHbox/WindowsExportCfg/WindowsPresetList
 @onready var maclist = $PlatformsSettings/MarginContainer/PlatformSettingsHbox/MacExportCfg/MacPresetList
 @onready var linuxlist = $PlatformsSettings/MarginContainer/PlatformSettingsHbox/LinuxExportCfg/LinuxPresetList
 
-@onready var windowsCheckbox = $PlatformsSettings/MarginContainer/PlatformSettingsHbox/WindowsExportCfg/WindowsPlatformSettings/WindowsCheckbox
-@onready var macCheckbox = $PlatformsSettings/MarginContainer/PlatformSettingsHbox/MacExportCfg/MacPlatformSettings/MacCheckbox
-@onready var linuxCheckbox = $PlatformsSettings/MarginContainer/PlatformSettingsHbox/LinuxExportCfg/LinuxPlatformSettings/LinuxCheckbox
-
 @onready var ProjectPathLine = $ProjectSettings/ProjectPathLineEdit
 @onready var GodotPathLine = $GodotSettings/GododtPathLineEdit
+
 
 signal project_path_loaded
 signal preset_saved
 
 const PRESET_FOLDER_PATH = "user://presets/"
 var game_preset_list = []
+var scripts_list = []
+var script_to_remove_idx = -1
 
 
 var building = false
@@ -43,7 +51,6 @@ var job_list = []
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	windowslist.get_popup().connect("id_pressed", _on_windowsPresetList_pressed)
 	var dir = DirAccess.open("user://")
 	if !dir.dir_exists(PRESET_FOLDER_PATH):
 		dir.make_dir_absolute(PRESET_FOLDER_PATH)
@@ -93,54 +100,45 @@ func _on_build_button_pressed():
 	
 	var godot_path = $GodotSettings/GododtPathLineEdit.text
 	var project_path = $ProjectSettings/ProjectPathLineEdit.text
-	var cmd_line 
+	var job_todo
+	
+	var presets_checked = get_checked_export_presets()
 	
 
-	if windowsCheckbox.button_pressed == true: #prepare windows build
-		
-		#get export preset name
-		var preset_name = windowslist.text
-		#get export path
-		var export_path = temp_export_presets_list[preset_name]["export_path"]
-		
+	for preset in presets_checked.keys():
+		if presets_checked[preset] == true:
+			#get export preset name
+			var preset_name = preset
+			#get export path
+			var export_path = temp_export_presets_list[preset_name]["export_path"]
+			
+			#construct command line
+			job_todo = job_template.duplicate()
+			job_todo["job_type"] = "godot_export"
+			job_todo["executable"] = godot_path
+			job_todo["project_path"] = project_path
+			job_todo["preset_name"] = preset_name
+			job_todo["export_path"] = export_path
+			job_todo["arguments"] = ["--no-window", "--path"]
+			job_todo["arguments"].append(project_path)
+			job_todo["arguments"].append("--export")
+			job_todo["arguments"].append(preset_name)
+			job_todo["arguments"].append(export_path)
+			
+			job_list.append(job_todo)
+	
+	
+	for line in scripts_list:
+		# get script path
+		var script_path = line[0]
+		var args = line[1]
 		#construct command line
-		cmd_line = empty_cmd_line.duplicate()
-		cmd_line["executable_path"] = godot_path
-		cmd_line["project_path"] = project_path
-		cmd_line["preset_name"] = preset_name
-		cmd_line["export_path"] = export_path
-		job_list.append(cmd_line)
-		
-	if linuxCheckbox.button_pressed == true: #prepare linux build
-		
-		#get export preset name
-		var preset_name = linuxlist.text
-		#get export path
-		var export_path = temp_export_presets_list[preset_name]["export_path"]
-		
-		#construct command line
-		cmd_line = empty_cmd_line.duplicate()
-		cmd_line["executable_path"] = godot_path
-		cmd_line["project_path"] = project_path
-		cmd_line["preset_name"] = preset_name
-		cmd_line["export_path"] = export_path
-		job_list.append(cmd_line)
-		
-	if macCheckbox.button_pressed == true: #prepare mac OSX build
-		
-		#get export preset name
-		var preset_name = maclist.text
-		#get export path
-		var export_path = temp_export_presets_list[preset_name]["export_path"]
-		
-		#construct command line
-		cmd_line = empty_cmd_line.duplicate()
-		cmd_line["executable_path"] = godot_path
-		cmd_line["project_path"] = project_path
-		cmd_line["preset_name"] = preset_name
-		cmd_line["export_path"] = export_path
-		job_list.append(cmd_line)
-		
+		job_todo = job_template.duplicate()
+		job_todo["job_type"] = "script"
+		job_todo["executable"] = script_path
+		job_todo["arguments"] = args.split(" ")
+		job_list.append(job_todo)
+			
 		
 	# launch first job
 	start_job()
@@ -151,24 +149,26 @@ func start_job():
 		if thread == null:
 #		if pid == null:
 			var job = job_list.pop_front()
-			# todo: create export path folders
-			var dir = DirAccess.open(job["project_path"])
-			var export_folder = job["export_path"].get_base_dir() 
-			if !dir.dir_exists(export_folder):
-				DirAccess.make_dir_recursive_absolute(job["project_path"]+"/"+export_folder)
+			if job["job_type"] == "godot_export":
+				# todo: create export path folders
+				var dir = DirAccess.open(job["project_path"])
+				var export_folder = job["export_path"].get_base_dir() 
+				if !dir.dir_exists(export_folder):
+					DirAccess.make_dir_recursive_absolute(job["project_path"]+"/"+export_folder)
+					
 			$console.text += "Current job parameters: \n"
 			$console.text += str(job)
 			$console.text += "\n"
 			$console.scroll_vertical = INF
 			thread = Thread.new()
 			thread.start(execute_job.bind(job),Thread.PRIORITY_NORMAL)
-#			pid = OS.create_process(job["executable_path"],["--no-window", "--path", job["project_path"], "--export",job["preset_name"], job["export_path"]], true)
+	#			pid = OS.create_process(job["executable_path"],["--no-window", "--path", job["project_path"], "--export",job["preset_name"], job["export_path"]], true)
 			building = true
 
 
 func execute_job(job) -> String:
 	var output:= []
-	var err: int = OS.execute(job["executable_path"],["--no-window", "--path", job["project_path"], "--export",job["preset_name"], job["export_path"]], output,true)
+	var err: int = OS.execute(job["executable"],job["arguments"], output,true)
 	if err != 0:
 		printerr("Error occurred: %d" % err)
 		return ("Error occurred: %d\n" % err) + "\n".join(PackedStringArray(output))
@@ -185,7 +185,10 @@ func _on_project_dialog_dir_selected(dir):
 	$ProjectSettings/ProjectPathLineEdit.text = dirtemp+"/"
 	temp_export_presets_list = parse_export_presets_cfg(dirtemp)
 	temp_project_name = parse_project_dot_godot(dirtemp)
-	
+	delete_scripts_display()
+	scripts_list = []
+	$BatchList/ScriptPathLineEdit.text = ""
+	$BatchList/ScriptArgsLineEdit.text = ""
 	emit_signal("project_path_loaded")
 	
 
@@ -257,53 +260,40 @@ func parse_project_dot_godot(path : String):
 
 
 func _on_project_path_loaded():
-	# update checkboxes and lists
-	windowslist.get_popup().clear()
-	maclist.get_popup().clear()
-	linuxlist.get_popup().clear()
-	
+	delete_export_preset_items()
 	for preset in temp_export_presets_list.values():
 		if preset["platform"] == "Windows Desktop":
-			$PlatformsSettings/MarginContainer/PlatformSettingsHbox/WindowsExportCfg/WindowsPlatformSettings/WindowsCheckbox.disabled = false
-			windowslist.get_popup().add_item(preset["name"])
+			var item = export_preset_item.instantiate()
+			item.connect("checkbox_pressed", check_checkboxes)
+			$PlatformsSettings/MarginContainer/PlatformSettingsHbox/WindowsPreset.add_child(item)
+			item.preset_name.text = preset["name"]
+#			$PlatformsSettings/MarginContainer/PlatformSettingsHbox/WindowsExportCfg/WindowsPlatformSettings/WindowsCheckbox.disabled = false
+#			windowslist.get_popup().add_item(preset["name"])
 		elif preset["platform"] == "Linux/X11":
-			$PlatformsSettings/MarginContainer/PlatformSettingsHbox/LinuxExportCfg/LinuxPlatformSettings/LinuxCheckbox.disabled = false
-			linuxlist.get_popup().add_item(preset["name"])
+			var item = export_preset_item.instantiate()
+			item.connect("checkbox_pressed", check_checkboxes)
+			$PlatformsSettings/MarginContainer/PlatformSettingsHbox/LinuxPreset.add_child(item)
+			item.preset_name.text = preset["name"]
 		elif preset["platform"] == "Mac OSX":
-			$PlatformsSettings/MarginContainer/PlatformSettingsHbox/MacExportCfg/MacPlatformSettings/MacCheckbox.disabled = false
-			maclist.get_popup().add_item(preset["name"])
+			var item = export_preset_item.instantiate()
+			item.connect("checkbox_pressed", check_checkboxes)
+			$PlatformsSettings/MarginContainer/PlatformSettingsHbox/MacPreset.add_child(item)
+			item.preset_name.text = preset["name"]
 			
-	# populate lists and update first element
-	windowslist.text = windowslist.get_popup().get_item_text(0)
-	maclist.text = maclist.get_popup().get_item_text(0)
-	linuxlist.text = linuxlist.get_popup().get_item_text(0)
 	$GamePresetSaveButton.disabled = false
 	$GamePresetDeleteButton.disabled = false
 			
-
-func _on_windowsPresetList_pressed(id):
-	windowslist.text = windowslist.get_popup().get_item_text(id)
-	
-
-func _on_windows_checkbox_pressed():
-	check_checkboxes()
-
-
-func _on_linux_checkbox_pressed():
-	check_checkboxes()
-
-
-func _on_mac_checkbox_pressed():
-	check_checkboxes()
 	
 func check_checkboxes():
-	if windowsCheckbox.button_pressed == true or \
-		linuxCheckbox.button_pressed == true or \
-		macCheckbox.button_pressed == true:
-		$BuildButton.disabled = false
-		
-	else:
-		$BuildButton.disabled = false
+	$BuildButton.disabled = true
+	#if at least one checkbox is checked, allow build
+	var presets = get_checked_export_presets()
+	for preset in presets.values():
+		if preset == true:
+			$BuildButton.disabled = false
+			return
+	return
+
 		
 		
 func disable_all(val : bool):
@@ -311,12 +301,7 @@ func disable_all(val : bool):
 	$ProjectSettings/ProjectBrowseButton.disabled = val
 	$GodotSettings/GododtPathLineEdit.editable = !val
 	$GodotSettings/GodotBrowseButton.disabled = val
-	$PlatformsSettings/MarginContainer/PlatformSettingsHbox/WindowsExportCfg/WindowsPlatformSettings/WindowsCheckbox.disabled = val
-	$PlatformsSettings/MarginContainer/PlatformSettingsHbox/WindowsExportCfg/WindowsPresetList.disabled = val
-	$PlatformsSettings/MarginContainer/PlatformSettingsHbox/LinuxExportCfg/LinuxPlatformSettings/LinuxCheckbox.disabled = val
-	$PlatformsSettings/MarginContainer/PlatformSettingsHbox/LinuxExportCfg/LinuxPresetList.disabled = val
-	$PlatformsSettings/MarginContainer/PlatformSettingsHbox/MacExportCfg/MacPlatformSettings/MacCheckbox.disabled = val
-	$PlatformsSettings/MarginContainer/PlatformSettingsHbox/MacExportCfg/MacPresetList.disabled = val
+	# TODO DISABLE ALL CHECKBOXES
 	$BuildButton.disabled = val
 	$GamePresetSaveButton.disabled = val
 
@@ -324,16 +309,24 @@ func delete_game_preset(path):
 	var dir = DirAccess.open("user://presets")
 	dir.remove(path)
 
+func get_checked_export_presets() -> Dictionary:
+	var presets = {}
+	for column in $PlatformsSettings/MarginContainer/PlatformSettingsHbox.get_children():
+		for preset in column.get_children():
+			var checked = preset.checkbox.button_pressed
+			presets[preset.preset_name.text] = checked
+	return presets
+
 func save_game_preset():
 	var preset = GamePreset.new()
 	
 	var project_name = temp_project_name
 	var godot_path = $GodotSettings/GododtPathLineEdit.text
 	var project_path = $ProjectSettings/ProjectPathLineEdit.text
-	var platform_checkboxes = [windowsCheckbox.button_pressed,macCheckbox.button_pressed, linuxCheckbox.button_pressed ]
-	var platform_presets = [windowslist.text,maclist.text, linuxlist.text ]
+	var platform_presets = get_checked_export_presets()
+	var list = scripts_list
 	
-	preset.create(project_name,project_path,godot_path,platform_checkboxes,platform_presets  )
+	preset.create(project_name,project_path,godot_path,platform_presets, list  )
 	
 	var filename = project_name.replace(":","-")
 	
@@ -343,7 +336,15 @@ func save_game_preset():
 func load_game_preset(project_name : String):
 	var path = PRESET_FOLDER_PATH+project_name+".res"
 	var preset = ResourceLoader.load(path) as GamePreset
-	
+
+	delete_export_preset_items()
+	delete_scripts_display()
+	$BatchList/ScriptPathLineEdit.text = ""
+	$BatchList/ScriptArgsLineEdit.text = ""
+	await get_tree().process_frame
+	await get_tree().process_frame
+	await get_tree().process_frame
+			
 	if preset == null:
 		delete_game_preset(path)
 	else:
@@ -353,13 +354,22 @@ func load_game_preset(project_name : String):
 		temp_project_name = parse_project_dot_godot(preset["project_path"])
 		emit_signal("project_path_loaded")
 		GodotPathLine.text = preset["godot_version_path"]
-		windowsCheckbox.button_pressed = preset["platforms_checked"][0]
-		macCheckbox.button_pressed = preset["platforms_checked"][1]
-		linuxCheckbox.button_pressed = preset["platforms_checked"][2]
-		windowslist.text = preset["export_presets"][0]
-		maclist.text = preset["export_presets"][1]
-		linuxlist.text = preset["export_presets"][2]
+		var presets_checked = preset["export_presets"].values()
+		var i = 0
+		for column in $PlatformsSettings/MarginContainer/PlatformSettingsHbox.get_children():
+			for preset_item in column.get_children():
+				preset_item.checkbox.button_pressed = presets_checked[i]
+				i+=1
+		scripts_list = preset["scripts_list"]
+		update_item_list()
 		
+func delete_scripts_display():
+	$BatchList/ScriptItemList.clear()
+
+func delete_export_preset_items():
+	for column in $PlatformsSettings/MarginContainer/PlatformSettingsHbox.get_children():
+		for preset_item in column.get_children():
+			preset_item.queue_free()
 
 
 func _on_game_preset_save_button_pressed():
@@ -401,12 +411,44 @@ func _on_game_preset_delete_button_pressed():
 	$GamePreset.text = ""
 	$ProjectSettings/ProjectPathLineEdit.text = ""
 	$GodotSettings/GododtPathLineEdit.text = ""
-	# update checkboxes and lists
-	windowslist.get_popup().clear()
-	windowslist.text = ""
-	maclist.get_popup().clear()
-	maclist.text = ""
-	linuxlist.get_popup().clear()
-	linuxlist.text = ""
+	# delete export preset items
+	delete_export_preset_items()
 	$GamePresetSaveButton.disabled = false
 	$GamePresetDeleteButton.disabled = false
+	#empty script list and fields
+	$BatchList/ScriptPathLineEdit.text = ""
+	$BatchList/ScriptArgsLineEdit.text = ""
+	scripts_list = []
+	update_item_list()
+
+
+func _on_add_script_button_pressed():
+	var line = [$BatchList/ScriptPathLineEdit.text, $BatchList/ScriptArgsLineEdit.text]
+	scripts_list.append(line)
+	
+	update_item_list()
+	
+func update_item_list():
+	$BatchList/ScriptItemList.clear()
+	if scripts_list != []:
+		for line in scripts_list:
+			$BatchList/ScriptItemList.add_item(line[0])
+			$BatchList/ScriptItemList.add_item(line[1])
+
+
+func _on_del_script_button_pressed():
+	#remove script line from the array and update list
+	scripts_list.remove_at(script_to_remove_idx)
+	update_item_list()
+	$BatchList/DelScriptButton.disabled = true
+
+func _on_script_item_list_item_selected(index):
+	index = int(index / 2) * 2 
+	script_to_remove_idx = index/2
+	$BatchList/DelScriptButton.disabled = false
+
+#	# set background color for all fields in the row
+#	for i in range (0, 2):
+#		$BatchList/ScriptItemList.set_item_custom_bg_color(index + i, Color.GRAY)
+		
+	

@@ -1,0 +1,23 @@
+[gd_scene load_steps=2 format=3 uid="uid://bynstg25pk3p2"]
+
+[ext_resource type="Script" path="res://scenes/export_preset_item.gd" id="1_ftmxy"]
+
+[node name="ExportPresetItem" type="HBoxContainer"]
+custom_minimum_size = Vector2(224, 32)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -544.0
+offset_bottom = -968.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_ftmxy")
+
+[node name="CheckBox" type="CheckBox" parent="."]
+layout_mode = 2
+
+[node name="preset_name" type="Label" parent="."]
+layout_mode = 2
+text = "Preset Name"
+
+[connection signal="pressed" from="CheckBox" to="." method="_on_check_box_pressed"]

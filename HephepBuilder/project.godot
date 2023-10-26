@@ -13,8 +13,10 @@ config_version=5
 config/name="HephepBuilder"
 run/main_scene="res://scenes/hephep_builder.tscn"
 config/features=PackedStringArray("4.1")
+config/version=""
 
 [display]
 
 window/size/viewport_width=800
-window/size/viewport_height=600
+window/size/viewport_height=1000
+window/stretch/mode="canvas_items"
