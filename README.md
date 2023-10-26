@@ -6,7 +6,7 @@
 As you may see if you tried this tools, I'm not really good at making UI yet. But the tool is functional!  
 
 ## How to use it?
-[screen capture]
+![A screenshot of the tool](Github Ressources/capture1.png)
 * First you will have to load the path to any Godot project with the Browse button for the Project Path input. Upon selecting a folder, it will parse the project.godot file to retrieve existing export templates.
 * Then, you will have to provide the Godot Editor you want to use to export you game/project. Just select the executable file with the second Browse button. 
 * The next step will be to check or not the export presets you want to use to export your project. Be aware that I chose to deny editing theses export settings, so they will have to be define in your Godot Editor prior to this.
