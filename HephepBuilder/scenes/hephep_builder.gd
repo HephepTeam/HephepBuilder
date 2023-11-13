@@ -24,10 +24,6 @@ var job_template = {
 
 @onready var export_preset_item = preload("res://scenes/export_preset_item.tscn")
 
-@onready var windowslist = $PlatformsSettings/MarginContainer/PlatformSettingsHbox/WindowsExportCfg/WindowsPresetList
-@onready var maclist = $PlatformsSettings/MarginContainer/PlatformSettingsHbox/MacExportCfg/MacPresetList
-@onready var linuxlist = $PlatformsSettings/MarginContainer/PlatformSettingsHbox/LinuxExportCfg/LinuxPresetList
-
 @onready var ProjectPathLine = $ProjectSettings/ProjectPathLineEdit
 @onready var GodotPathLine = $GodotSettings/GododtPathLineEdit
 
@@ -37,8 +33,7 @@ signal preset_saved
 
 const PRESET_FOLDER_PATH = "user://presets/"
 var game_preset_list = []
-var scripts_list = []
-var script_to_remove_idx = -1
+
 
 
 var building = false
@@ -128,7 +123,7 @@ func _on_build_button_pressed():
 			job_list.append(job_todo)
 	
 	
-	for line in scripts_list:
+	for line in $BatchList.scripts_list:
 		# get script path
 		var script_path = line[0]
 		var args = line[1]
@@ -186,7 +181,7 @@ func _on_project_dialog_dir_selected(dir):
 	temp_export_presets_list = parse_export_presets_cfg(dirtemp)
 	temp_project_name = parse_project_dot_godot(dirtemp)
 	delete_scripts_display()
-	scripts_list = []
+	$BatchList.scripts_list = []
 	$BatchList/ScriptPathLineEdit.text = ""
 	$BatchList/ScriptArgsLineEdit.text = ""
 	emit_signal("project_path_loaded")
@@ -324,7 +319,7 @@ func save_game_preset():
 	var godot_path = $GodotSettings/GododtPathLineEdit.text
 	var project_path = $ProjectSettings/ProjectPathLineEdit.text
 	var platform_presets = get_checked_export_presets()
-	var list = scripts_list
+	var list = $BatchList.scripts_list
 	
 	preset.create(project_name,project_path,godot_path,platform_presets, list  )
 	
@@ -360,8 +355,8 @@ func load_game_preset(project_name : String):
 			for preset_item in column.get_children():
 				preset_item.checkbox.button_pressed = presets_checked[i]
 				i+=1
-		scripts_list = preset["scripts_list"]
-		update_item_list()
+		$BatchList.scripts_list = preset["scripts_list"]
+		$BatchList.update_item_list()
 		
 func delete_scripts_display():
 	$BatchList/ScriptItemList.clear()
@@ -399,11 +394,6 @@ func _on_GamePreset_item_pressed(id):
 	$GamePreset.text = $GamePreset.get_popup().get_item_text(id)
 	$GamePresetSaveButton.disabled = false
 
-
-func _on_button_pressed():
-	get_tree().quit()
-
-
 func _on_game_preset_delete_button_pressed():
 	var path = PRESET_FOLDER_PATH+ $GamePreset.text+".res"
 	delete_game_preset(path)
@@ -418,37 +408,6 @@ func _on_game_preset_delete_button_pressed():
 	#empty script list and fields
 	$BatchList/ScriptPathLineEdit.text = ""
 	$BatchList/ScriptArgsLineEdit.text = ""
-	scripts_list = []
-	update_item_list()
+	$BatchList.scripts_list = []
+	$BatchList.update_item_list()
 
-
-func _on_add_script_button_pressed():
-	var line = [$BatchList/ScriptPathLineEdit.text, $BatchList/ScriptArgsLineEdit.text]
-	scripts_list.append(line)
-	
-	update_item_list()
-	
-func update_item_list():
-	$BatchList/ScriptItemList.clear()
-	if scripts_list != []:
-		for line in scripts_list:
-			$BatchList/ScriptItemList.add_item(line[0])
-			$BatchList/ScriptItemList.add_item(line[1])
-
-
-func _on_del_script_button_pressed():
-	#remove script line from the array and update list
-	scripts_list.remove_at(script_to_remove_idx)
-	update_item_list()
-	$BatchList/DelScriptButton.disabled = true
-
-func _on_script_item_list_item_selected(index):
-	index = int(index / 2) * 2 
-	script_to_remove_idx = index/2
-	$BatchList/DelScriptButton.disabled = false
-
-#	# set background color for all fields in the row
-#	for i in range (0, 2):
-#		$BatchList/ScriptItemList.set_item_custom_bg_color(index + i, Color.GRAY)
-		
-	

@@ -48,19 +48,21 @@ offset_bottom = 37.0
 text = "Project path:"
 
 [node name="ProjectPathLineEdit" type="LineEdit" parent="ProjectSettings"]
+custom_minimum_size = Vector2(0, 32)
 layout_mode = 0
 offset_left = 40.0
 offset_top = 40.0
 offset_right = 672.0
-offset_bottom = 66.0
+offset_bottom = 72.0
 placeholder_text = "the path for the project you want to build"
 
 [node name="ProjectBrowseButton" type="Button" parent="ProjectSettings"]
+custom_minimum_size = Vector2(0, 32)
 layout_mode = 0
-offset_left = 688.0
+offset_left = 680.0
 offset_top = 39.0
-offset_right = 772.0
-offset_bottom = 70.0
+offset_right = 768.0
+offset_bottom = 71.0
 text = "BROWSE"
 
 [node name="GodotSettings" type="Control" parent="."]
@@ -78,6 +80,7 @@ offset_bottom = 37.0
 text = "Godot path:"
 
 [node name="GododtPathLineEdit" type="LineEdit" parent="GodotSettings"]
+custom_minimum_size = Vector2(0, 32)
 layout_mode = 0
 offset_left = 40.0
 offset_top = 40.0
@@ -86,10 +89,11 @@ offset_bottom = 66.0
 placeholder_text = "the path for the Godot version you want to build with"
 
 [node name="GodotBrowseButton" type="Button" parent="GodotSettings"]
+custom_minimum_size = Vector2(0, 32)
 layout_mode = 0
-offset_left = 688.0
+offset_left = 680.0
 offset_top = 38.0
-offset_right = 772.0
+offset_right = 768.0
 offset_bottom = 70.0
 text = "BROWSE"
 
@@ -127,7 +131,7 @@ layout_mode = 2
 anchors_preset = 0
 offset_top = 393.0
 offset_right = 800.0
-offset_bottom = 704.0
+offset_bottom = 672.0
 script = ExtResource("3_0pw6q")
 
 [node name="BatchListTitle" type="Label" parent="BatchList"]
@@ -169,6 +173,8 @@ offset_right = 709.0
 offset_bottom = 86.0
 
 [node name="ItchScriptBrowseButton" type="Button" parent="BatchList"]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 0
 offset_left = 328.0
 offset_top = 55.0
 offset_right = 412.0
@@ -176,17 +182,19 @@ offset_bottom = 87.0
 text = "BROWSE"
 
 [node name="AddScriptButton" type="Button" parent="BatchList"]
-offset_left = 720.0
+layout_mode = 0
+offset_left = 712.0
 offset_top = 55.0
-offset_right = 774.0
+offset_right = 768.0
 offset_bottom = 87.0
 disabled = true
 text = "ADD"
 
 [node name="DelScriptButton" type="Button" parent="BatchList"]
-offset_left = 720.0
+layout_mode = 0
+offset_left = 712.0
 offset_top = 95.0
-offset_right = 774.0
+offset_right = 768.0
 offset_bottom = 127.0
 disabled = true
 text = "DEL"
@@ -210,13 +218,33 @@ offset_bottom = 247.0
 text_overrun_behavior = 1
 max_columns = 2
 
+[node name="ListUpButton" type="Button" parent="BatchList"]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 0
+offset_left = 712.0
+offset_top = 135.0
+offset_right = 763.0
+offset_bottom = 167.0
+disabled = true
+text = "up"
+
+[node name="ListDownButton" type="Button" parent="BatchList"]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 0
+offset_left = 712.0
+offset_top = 168.0
+offset_right = 763.0
+offset_bottom = 200.0
+disabled = true
+text = "down"
+
 [node name="BuildButton" type="Button" parent="."]
+custom_minimum_size = Vector2(0, 32)
 layout_mode = 0
 offset_left = 656.0
 offset_top = 920.0
-offset_right = 766.0
-offset_bottom = 970.0
-theme_override_font_sizes/font_size = 30
+offset_right = 768.0
+offset_bottom = 952.0
 disabled = true
 text = "BUILD"
 
@@ -241,29 +269,31 @@ file_mode = 0
 access = 2
 
 [node name="GamePreset" type="MenuButton" parent="."]
-custom_minimum_size = Vector2(226, 0)
+custom_minimum_size = Vector2(226, 32)
 layout_mode = 0
-offset_left = 448.0
+offset_left = 440.0
 offset_top = 48.0
-offset_right = 674.0
-offset_bottom = 88.0
+offset_right = 672.0
+offset_bottom = 80.0
 flat = false
 
 [node name="GamePresetSaveButton" type="Button" parent="."]
+custom_minimum_size = Vector2(0, 32)
 layout_mode = 0
-offset_left = 688.0
+offset_left = 680.0
 offset_top = 48.0
-offset_right = 735.0
-offset_bottom = 88.0
+offset_right = 727.0
+offset_bottom = 80.0
 disabled = true
 text = "SAVE"
 
 [node name="GamePresetDeleteButton" type="Button" parent="."]
+custom_minimum_size = Vector2(0, 32)
 layout_mode = 0
-offset_left = 736.0
+offset_left = 728.0
 offset_top = 48.0
-offset_right = 783.0
-offset_bottom = 88.0
+offset_right = 768.0
+offset_bottom = 80.0
 disabled = true
 text = "DEL"
 
@@ -276,18 +306,10 @@ offset_right = 465.0
 offset_bottom = 581.0
 text = "HEPEP TEAM ALL RIGHTS RESERVED LTD INC"
 
-[node name="Button" type="Button" parent="."]
-layout_mode = 0
-offset_left = 736.0
-offset_top = 9.0
-offset_right = 768.0
-offset_bottom = 40.0
-text = "X"
-
 [node name="console" type="TextEdit" parent="."]
 layout_mode = 0
-offset_left = 16.0
-offset_top = 752.0
+offset_left = 39.0
+offset_top = 672.0
 offset_right = 640.0
 offset_bottom = 960.0
 editable = false
@@ -300,13 +322,14 @@ middle_mouse_paste_enabled = false
 [connection signal="pressed" from="ProjectSettings/ProjectBrowseButton" to="." method="_on_project_browse_button_pressed"]
 [connection signal="pressed" from="GodotSettings/GodotBrowseButton" to="." method="_on_godot_browse_button_pressed"]
 [connection signal="pressed" from="BatchList/ItchScriptBrowseButton" to="BatchList" method="_on_itch_script_browse_button_pressed"]
-[connection signal="pressed" from="BatchList/AddScriptButton" to="." method="_on_add_script_button_pressed"]
-[connection signal="pressed" from="BatchList/DelScriptButton" to="." method="_on_del_script_button_pressed"]
+[connection signal="pressed" from="BatchList/AddScriptButton" to="BatchList" method="_on_add_script_button_pressed"]
+[connection signal="pressed" from="BatchList/DelScriptButton" to="BatchList" method="_on_del_script_button_pressed"]
 [connection signal="file_selected" from="BatchList/ScriptDialog" to="BatchList" method="_on_itch_dialog_file_selected"]
-[connection signal="item_selected" from="BatchList/ScriptItemList" to="." method="_on_script_item_list_item_selected"]
+[connection signal="item_selected" from="BatchList/ScriptItemList" to="BatchList" method="_on_script_item_list_item_selected"]
+[connection signal="pressed" from="BatchList/ListUpButton" to="BatchList" method="_on_list_up_button_pressed"]
+[connection signal="pressed" from="BatchList/ListDownButton" to="BatchList" method="_on_list_down_button_pressed"]
 [connection signal="pressed" from="BuildButton" to="." method="_on_build_button_pressed"]
 [connection signal="dir_selected" from="ProjectDialog" to="." method="_on_project_dialog_dir_selected"]
 [connection signal="file_selected" from="GodotDialog" to="." method="_on_godot_dialog_file_selected"]
 [connection signal="pressed" from="GamePresetSaveButton" to="." method="_on_game_preset_save_button_pressed"]
 [connection signal="pressed" from="GamePresetDeleteButton" to="." method="_on_game_preset_delete_button_pressed"]
-[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
