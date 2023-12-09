@@ -103,6 +103,7 @@ offset_left = 27.0
 offset_top = 250.0
 offset_right = 752.0
 offset_bottom = 330.0
+mouse_filter = 1
 
 [node name="MarginContainer" type="MarginContainer" parent="PlatformsSettings"]
 layout_mode = 0
@@ -132,6 +133,7 @@ anchors_preset = 0
 offset_top = 393.0
 offset_right = 800.0
 offset_bottom = 672.0
+mouse_filter = 1
 script = ExtResource("3_0pw6q")
 
 [node name="BatchListTitle" type="Label" parent="BatchList"]
@@ -163,6 +165,7 @@ offset_left = 40.0
 offset_top = 55.0
 offset_right = 320.0
 offset_bottom = 86.0
+mouse_filter = 1
 editable = false
 
 [node name="ScriptArgsLineEdit" type="LineEdit" parent="BatchList"]
@@ -171,6 +174,7 @@ offset_left = 416.0
 offset_top = 55.0
 offset_right = 709.0
 offset_bottom = 86.0
+mouse_filter = 1
 
 [node name="ItchScriptBrowseButton" type="Button" parent="BatchList"]
 custom_minimum_size = Vector2(0, 32)
@@ -179,6 +183,7 @@ offset_left = 328.0
 offset_top = 55.0
 offset_right = 412.0
 offset_bottom = 87.0
+mouse_filter = 1
 text = "BROWSE"
 
 [node name="AddScriptButton" type="Button" parent="BatchList"]
@@ -187,6 +192,7 @@ offset_left = 712.0
 offset_top = 55.0
 offset_right = 768.0
 offset_bottom = 87.0
+mouse_filter = 1
 disabled = true
 text = "ADD"
 
@@ -196,6 +202,7 @@ offset_left = 712.0
 offset_top = 95.0
 offset_right = 768.0
 offset_bottom = 127.0
+mouse_filter = 1
 disabled = true
 text = "DEL"
 
@@ -204,7 +211,7 @@ title = "Open a File"
 initial_position = 1
 size = Vector2i(800, 400)
 min_size = Vector2i(300, 300)
-ok_button_text = "Ouvrir"
+ok_button_text = "Open"
 dialog_hide_on_ok = true
 file_mode = 0
 access = 2
@@ -215,6 +222,7 @@ offset_left = 40.0
 offset_top = 95.0
 offset_right = 709.0
 offset_bottom = 247.0
+mouse_filter = 1
 text_overrun_behavior = 1
 max_columns = 2
 
@@ -225,6 +233,7 @@ offset_left = 712.0
 offset_top = 135.0
 offset_right = 763.0
 offset_bottom = 167.0
+mouse_filter = 1
 disabled = true
 text = "up"
 
@@ -253,7 +262,7 @@ title = "Open a Directory"
 initial_position = 1
 size = Vector2i(800, 400)
 min_size = Vector2i(300, 300)
-ok_button_text = "Sélectionner le dossier courant"
+ok_button_text = "Select Current Folder"
 dialog_hide_on_ok = true
 file_mode = 2
 access = 2
@@ -263,7 +272,7 @@ title = "Open a File"
 initial_position = 1
 size = Vector2i(800, 400)
 min_size = Vector2i(300, 300)
-ok_button_text = "Ouvrir"
+ok_button_text = "Open"
 dialog_hide_on_ok = true
 file_mode = 0
 access = 2
