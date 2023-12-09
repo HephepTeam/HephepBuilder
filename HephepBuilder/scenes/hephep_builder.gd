@@ -351,10 +351,14 @@ func load_game_preset(project_name : String):
 		GodotPathLine.text = preset["godot_version_path"]
 		var presets_checked = preset["export_presets"].values()
 		var i = 0
+		var at_least_one_preset_enabled = false
 		for column in $PlatformsSettings/MarginContainer/PlatformSettingsHbox.get_children():
 			for preset_item in column.get_children():
 				preset_item.checkbox.button_pressed = presets_checked[i]
+				if presets_checked[i] == true:
+					at_least_one_preset_enabled = true
 				i+=1
+		$BuildButton.disabled = !at_least_one_preset_enabled
 		$BatchList.scripts_list = preset["scripts_list"]
 		$BatchList.update_item_list()
 		
