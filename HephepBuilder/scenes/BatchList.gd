@@ -6,6 +6,7 @@ var enabled = false
 
 var scripts_list = []
 var script_selected_idx = -1
+var temp_line_edit = null
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -75,4 +76,35 @@ func _on_script_item_list_item_selected(index):
 	$ListDownButton.disabled = false
 
 
+func _on_script_item_list_item_clicked(index, at_position, mouse_button_index):
+	if temp_line_edit != null:
+		temp_line_edit.queue_free()
+		temp_line_edit = null
+		
+	if index % 2 != 0:
+		print(index)
+		var script_index = int(index / 2) * 2 
+		#get the content of the cell
+		var content = scripts_list[script_index/2][1]
+		#create a line edit
+		#resize the line edit
+		#file with the content
+		#highlight all
+		var le : LineEdit = LineEdit.new()
+		le.position = get_global_mouse_position()#at_position
+		le.select_all_on_focus = true
+		le.expand_to_text_length = true
+		le.mouse_filter = Control.MOUSE_FILTER_STOP
+		get_parent().add_child(le)
+		le.text = content
+		le.grab_focus()
+		le.select_all()
+		le.text_submitted.connect(Callable(_on_arg_line_edit_text_submitted).bind(script_index))
+		temp_line_edit = le
 
+		
+func _on_arg_line_edit_text_submitted(new_text : String, index):
+	scripts_list[index/2][1] = new_text
+	temp_line_edit.queue_free()
+	temp_line_edit = null
+	update_item_list()

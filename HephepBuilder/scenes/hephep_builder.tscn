@@ -334,6 +334,7 @@ middle_mouse_paste_enabled = false
 [connection signal="pressed" from="BatchList/AddScriptButton" to="BatchList" method="_on_add_script_button_pressed"]
 [connection signal="pressed" from="BatchList/DelScriptButton" to="BatchList" method="_on_del_script_button_pressed"]
 [connection signal="file_selected" from="BatchList/ScriptDialog" to="BatchList" method="_on_itch_dialog_file_selected"]
+[connection signal="item_clicked" from="BatchList/ScriptItemList" to="BatchList" method="_on_script_item_list_item_clicked"]
 [connection signal="item_selected" from="BatchList/ScriptItemList" to="BatchList" method="_on_script_item_list_item_selected"]
 [connection signal="pressed" from="BatchList/ListUpButton" to="BatchList" method="_on_list_up_button_pressed"]
 [connection signal="pressed" from="BatchList/ListDownButton" to="BatchList" method="_on_list_down_button_pressed"]

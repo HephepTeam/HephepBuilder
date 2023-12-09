@@ -27,6 +27,8 @@ var job_template = {
 @onready var ProjectPathLine = $ProjectSettings/ProjectPathLineEdit
 @onready var GodotPathLine = $GodotSettings/GododtPathLineEdit
 
+@onready var BatchList = $BatchList
+
 
 signal project_path_loaded
 signal preset_saved
@@ -415,3 +417,14 @@ func _on_game_preset_delete_button_pressed():
 	$BatchList.scripts_list = []
 	$BatchList.update_item_list()
 
+func _input(event):
+	if (event is InputEventMouseButton) and event.is_pressed():
+		_remove_temp_line_edit_if_any()
+	if((event is InputEventKey) and event.keycode == KEY_ESCAPE) :
+		_remove_temp_line_edit_if_any()
+
+func _remove_temp_line_edit_if_any():
+	if BatchList.temp_line_edit != null:
+		if BatchList.temp_line_edit.has_focus():
+			BatchList.temp_line_edit.queue_free()
+			BatchList.temp_line_edit = null
