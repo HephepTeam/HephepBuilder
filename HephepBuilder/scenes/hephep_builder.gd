@@ -1,5 +1,6 @@
 extends Control
 
+
 var empty_project_export_cfg = {
 	"name" : "",
 	"platform": "",
@@ -37,9 +38,7 @@ const PRESET_FOLDER_PATH = "user://presets/"
 var game_preset_list = []
 
 
-
-var building = false
-var pid_list = []
+var building : bool = false
 var modifications_to_be_saved = false
 
 var temp_export_presets_list = {}

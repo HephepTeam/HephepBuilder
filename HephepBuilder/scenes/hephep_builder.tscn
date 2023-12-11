@@ -55,6 +55,7 @@ offset_top = 40.0
 offset_right = 672.0
 offset_bottom = 72.0
 placeholder_text = "the path for the project you want to build"
+editable = false
 
 [node name="ProjectBrowseButton" type="Button" parent="ProjectSettings"]
 custom_minimum_size = Vector2(0, 32)
@@ -87,6 +88,7 @@ offset_top = 40.0
 offset_right = 672.0
 offset_bottom = 66.0
 placeholder_text = "the path for the Godot version you want to build with"
+editable = false
 
 [node name="GodotBrowseButton" type="Button" parent="GodotSettings"]
 custom_minimum_size = Vector2(0, 32)
@@ -305,15 +307,6 @@ offset_right = 768.0
 offset_bottom = 80.0
 disabled = true
 text = "DEL"
-
-[node name="ltd" type="Label" parent="."]
-visible = false
-layout_mode = 0
-offset_left = 27.0
-offset_top = 560.0
-offset_right = 465.0
-offset_bottom = 581.0
-text = "HEPEP TEAM ALL RIGHTS RESERVED LTD INC"
 
 [node name="console" type="TextEdit" parent="."]
 layout_mode = 0
