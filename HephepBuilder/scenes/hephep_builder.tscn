@@ -327,9 +327,20 @@ drag_and_drop_selection_enabled = false
 virtual_keyboard_enabled = false
 middle_mouse_paste_enabled = false
 
+[node name="ConfirmationDialog" type="ConfirmationDialog" parent="."]
+title = "Save configuration?"
+initial_position = 1
+size = Vector2i(511, 100)
+unresizable = true
+ok_button_text = "Yes"
+dialog_text = "Do you want to save changes made to this configuration preset?"
+dialog_autowrap = true
+cancel_button_text = "No"
+
 [connection signal="project_path_loaded" from="." to="." method="_on_project_path_loaded"]
 [connection signal="pressed" from="ProjectSettings/ProjectBrowseButton" to="." method="_on_project_browse_button_pressed"]
 [connection signal="pressed" from="GodotSettings/GodotBrowseButton" to="." method="_on_godot_browse_button_pressed"]
+[connection signal="modif_to_be_saved" from="BatchList" to="." method="_on_batch_list_modif_to_be_saved"]
 [connection signal="pressed" from="BatchList/ItchScriptBrowseButton" to="BatchList" method="_on_itch_script_browse_button_pressed"]
 [connection signal="pressed" from="BatchList/AddScriptButton" to="BatchList" method="_on_add_script_button_pressed"]
 [connection signal="pressed" from="BatchList/DelScriptButton" to="BatchList" method="_on_del_script_button_pressed"]
@@ -343,3 +354,5 @@ middle_mouse_paste_enabled = false
 [connection signal="file_selected" from="GodotDialog" to="." method="_on_godot_dialog_file_selected"]
 [connection signal="pressed" from="GamePresetSaveButton" to="." method="_on_game_preset_save_button_pressed"]
 [connection signal="pressed" from="GamePresetDeleteButton" to="." method="_on_game_preset_delete_button_pressed"]
+[connection signal="canceled" from="ConfirmationDialog" to="." method="_on_confirmation_dialog_canceled"]
+[connection signal="confirmed" from="ConfirmationDialog" to="." method="_on_confirmation_dialog_confirmed"]

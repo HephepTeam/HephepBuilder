@@ -29,7 +29,7 @@ var job_template = {
 
 @onready var BatchList = $BatchList
 
-
+signal saved_dialog_clicked
 signal project_path_loaded
 signal preset_saved
 
@@ -40,6 +40,7 @@ var game_preset_list = []
 
 var building = false
 var pid_list = []
+var modifications_to_be_saved = false
 
 var temp_export_presets_list = {}
 var temp_project_name = ""
@@ -48,6 +49,7 @@ var job_list = []
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	get_tree().set_auto_accept_quit(false)
 	var dir = DirAccess.open("user://")
 	if !dir.dir_exists(PRESET_FOLDER_PATH):
 		dir.make_dir_absolute(PRESET_FOLDER_PATH)
@@ -91,6 +93,12 @@ func _process(delta):
 				disable_all(false)
 
 func _on_build_button_pressed():
+	if modifications_to_be_saved:
+		#show confirmation dialog
+		$ConfirmationDialog.show()
+		#wait for confirmation dialog clicked
+		await saved_dialog_clicked
+	
 	disable_all(true)
 	
 	var output = []
@@ -282,6 +290,7 @@ func _on_project_path_loaded():
 			
 	
 func check_checkboxes():
+	modifications_to_be_saved = true
 	$BuildButton.disabled = true
 	#if at least one checkbox is checked, allow build
 	var presets = get_checked_export_presets()
@@ -428,3 +437,29 @@ func _remove_temp_line_edit_if_any():
 		if BatchList.temp_line_edit.has_focus():
 			BatchList.temp_line_edit.queue_free()
 			BatchList.temp_line_edit = null
+
+
+func _on_confirmation_dialog_confirmed():
+	$GamePreset.text = temp_project_name
+	save_game_preset()
+	get_game_preset_list()
+	modifications_to_be_saved = false
+	saved_dialog_clicked.emit()
+
+
+func _on_confirmation_dialog_canceled():
+	modifications_to_be_saved = false
+	saved_dialog_clicked.emit()
+	
+func _notification(what):
+	if what == NOTIFICATION_WM_CLOSE_REQUEST:
+		if modifications_to_be_saved:
+			#show confirmation dialog
+			$ConfirmationDialog.show()
+			#wait for confirmation dialog clicked
+			await saved_dialog_clicked
+		get_tree().quit() 
+
+
+func _on_batch_list_modif_to_be_saved():
+	modifications_to_be_saved = true

@@ -1,5 +1,7 @@
 extends Control
 
+signal modif_to_be_saved
+
 var enabled = false
 
 @onready var item_list = $ScriptItemList
@@ -46,17 +48,21 @@ func _on_itch_script_browse_button_pressed():
 func _on_list_up_button_pressed():
 	if script_selected_idx > 0:
 		switch_items(script_selected_idx, script_selected_idx-1)
+		modif_to_be_saved.emit()
 	update_item_list()
+	
 
 func _on_list_down_button_pressed():
 	if script_selected_idx < scripts_list.size()-1:
 		switch_items(script_selected_idx, script_selected_idx+1)
+		modif_to_be_saved.emit()
 	update_item_list()
 
 func _on_add_script_button_pressed():
 	var line = [$ScriptPathLineEdit.text, $ScriptArgsLineEdit.text]
 	scripts_list.append(line)
 	update_item_list()
+	modif_to_be_saved.emit()
 
 
 func _on_del_script_button_pressed():
@@ -66,6 +72,7 @@ func _on_del_script_button_pressed():
 	$DelScriptButton.disabled = true
 	$ListUpButton.disabled = true
 	$ListDownButton.disabled = true
+	modif_to_be_saved.emit()
 
 
 func _on_script_item_list_item_selected(index):
@@ -108,3 +115,4 @@ func _on_arg_line_edit_text_submitted(new_text : String, index):
 	temp_line_edit.queue_free()
 	temp_line_edit = null
 	update_item_list()
+	modif_to_be_saved.emit()
